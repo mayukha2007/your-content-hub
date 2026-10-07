@@ -10,33 +10,116 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ExceptionsRouteImport } from './routes/exceptions'
+import { Route as InventoryRouteImport } from './routes/inventory'
+import { Route as MachinesRouteImport } from './routes/machines'
+import { Route as TechniciansRouteImport } from './routes/technicians'
+import { Route as ServiceRequestsIndexRouteImport } from './routes/service-requests/index'
+import { Route as ServiceRequestsRequestIdRouteImport } from './routes/service-requests/$requestId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExceptionsRoute = ExceptionsRouteImport.update({
+  id: '/exceptions',
+  path: '/exceptions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InventoryRoute = InventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MachinesRoute = MachinesRouteImport.update({
+  id: '/machines',
+  path: '/machines',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TechniciansRoute = TechniciansRouteImport.update({
+  id: '/technicians',
+  path: '/technicians',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServiceRequestsIndexRoute = ServiceRequestsIndexRouteImport.update({
+  id: '/service-requests/',
+  path: '/service-requests/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServiceRequestsRequestIdRoute =
+  ServiceRequestsRequestIdRouteImport.update({
+    id: '/service-requests/$requestId',
+    path: '/service-requests/$requestId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/exceptions': typeof ExceptionsRoute
+  '/inventory': typeof InventoryRoute
+  '/machines': typeof MachinesRoute
+  '/technicians': typeof TechniciansRoute
+  '/service-requests/$requestId': typeof ServiceRequestsRequestIdRoute
+  '/service-requests/': typeof ServiceRequestsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/exceptions': typeof ExceptionsRoute
+  '/inventory': typeof InventoryRoute
+  '/machines': typeof MachinesRoute
+  '/technicians': typeof TechniciansRoute
+  '/service-requests/$requestId': typeof ServiceRequestsRequestIdRoute
+  '/service-requests': typeof ServiceRequestsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/exceptions': typeof ExceptionsRoute
+  '/inventory': typeof InventoryRoute
+  '/machines': typeof MachinesRoute
+  '/technicians': typeof TechniciansRoute
+  '/service-requests/$requestId': typeof ServiceRequestsRequestIdRoute
+  '/service-requests/': typeof ServiceRequestsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/exceptions'
+    | '/inventory'
+    | '/machines'
+    | '/technicians'
+    | '/service-requests/$requestId'
+    | '/service-requests/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/exceptions'
+    | '/inventory'
+    | '/machines'
+    | '/technicians'
+    | '/service-requests/$requestId'
+    | '/service-requests'
+  id:
+    | '__root__'
+    | '/'
+    | '/exceptions'
+    | '/inventory'
+    | '/machines'
+    | '/technicians'
+    | '/service-requests/$requestId'
+    | '/service-requests/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ExceptionsRoute: typeof ExceptionsRoute
+  InventoryRoute: typeof InventoryRoute
+  MachinesRoute: typeof MachinesRoute
+  TechniciansRoute: typeof TechniciansRoute
+  ServiceRequestsRequestIdRoute: typeof ServiceRequestsRequestIdRoute
+  ServiceRequestsIndexRoute: typeof ServiceRequestsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +131,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/exceptions': {
+      id: '/exceptions'
+      path: '/exceptions'
+      fullPath: '/exceptions'
+      preLoaderRoute: typeof ExceptionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inventory': {
+      id: '/inventory'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof InventoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/machines': {
+      id: '/machines'
+      path: '/machines'
+      fullPath: '/machines'
+      preLoaderRoute: typeof MachinesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/technicians': {
+      id: '/technicians'
+      path: '/technicians'
+      fullPath: '/technicians'
+      preLoaderRoute: typeof TechniciansRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/service-requests/': {
+      id: '/service-requests/'
+      path: '/service-requests'
+      fullPath: '/service-requests/'
+      preLoaderRoute: typeof ServiceRequestsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/service-requests/$requestId': {
+      id: '/service-requests/$requestId'
+      path: '/service-requests/$requestId'
+      fullPath: '/service-requests/$requestId'
+      preLoaderRoute: typeof ServiceRequestsRequestIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ExceptionsRoute: ExceptionsRoute,
+  InventoryRoute: InventoryRoute,
+  MachinesRoute: MachinesRoute,
+  TechniciansRoute: TechniciansRoute,
+  ServiceRequestsRequestIdRoute: ServiceRequestsRequestIdRoute,
+  ServiceRequestsIndexRoute: ServiceRequestsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
