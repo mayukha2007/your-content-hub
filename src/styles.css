@@ -209,3 +209,11 @@ body { font-family: "Geist", sans-serif; font-size: 13px; letter-spacing: 0; }
 }
 @media print { .dq-screen aside, .dq-screen header, .dq-menu-toggle, .dq-toast { display: none; } .dq-screen .pl-64 { padding-left: 0; } .dq-screen main { padding-top: 0; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* The reference palette takes precedence over the starter shadcn defaults. */
+:root { --primary: oklch(0.48861 0.1017 239.7); --primary-foreground: oklch(1 0 0); --background: oklch(0.98306 0.00803 278.64); --foreground: var(--on-surface); }
+@theme { --radius-xl: 0.5rem; --radius-lg: 0.25rem; --radius-sm: 0.125rem; --radius: 0.125rem; }
+.dq-screen .dq-list-mode { grid-template-columns: minmax(0,1fr) !important; }
+.dq-screen button.bg-primary { color: var(--on-primary); }
+.dq-screen button { font-weight: inherit; }
+.dq-screen main div:has(> table) { overflow-x: auto; }

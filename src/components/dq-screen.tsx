@@ -34,16 +34,17 @@ const options: HTMLReactParserOptions = {
     if (node.name === 'body') return <>{domToReact(node.children as DOMNode[], options)}</>;
     if (node.name === 'button') {
       const props = attributesToProps(attrs);
-      const icon = node.children.find(n => n instanceof Element && n.attribs.class?.includes('material-symbols-outlined'));
+      const icon = node.children.find(n => n instanceof Element && n.attribs['class']?.includes('material-symbols-outlined'));
       const name = icon instanceof Element ? icon.children.map(n => 'data' in n ? n.data : '').join('').replaceAll('_', ' ') : undefined;
-      return <Button {...props} variant="stitch" size="stitch" type="button" title={attrs.title || name} aria-label={attrs['aria-label'] || (node.children.length === 1 ? name : undefined)}>{domToReact(node.children as DOMNode[], options)}</Button>;
+      return <Button {...props} variant="stitch" size="stitch" type="button" title={attrs['title'] || name} aria-label={attrs['aria-label'] || (node.children.length === 1 ? name : undefined)}>{domToReact(node.children as DOMNode[], options)}</Button>;
     }
     if (node.name === 'a') {
       const path = attrs['data-path'] as keyof typeof destinations | undefined;
-      if (path && destinations[path]) attrs.href = destinations[path];
-      else if (attrs.href === '#') attrs.href = '/service-requests/SR-4102';
+      if (path && destinations[path]) attrs['href'] = destinations[path];
+      else if (attrs['href'] === '#') attrs['href'] = '/service-requests/SR-4102';
       node.attribs = attrs;
     }
+    return undefined;
   },
 };
 
@@ -58,7 +59,7 @@ export function DQScreen({ screen }: { screen: ScreenName }) {
   const markup = useMemo(() => parse(screens[screen], options), [screen]);
   const filters = useRef({ query: '', global: '', tab: 'all', selections: new Map<HTMLSelectElement, string>() });
   const notify = (text: string) => setToast(text);
-  const go = (to: '/' | '/service-requests' | '/service-requests/SR-4102' | '/machines' | '/technicians' | '/inventory' | '/exceptions') => { setMenuOpen(false); void navigate({ to }); };
+  const go = (to: '/' | '/service-requests' | '/service-requests/SR-4102' | '/machines' | '/technicians' | '/inventory' | '/exceptions') => { setMenuOpen(false); if (to === '/service-requests/SR-4102') void navigate({ to: '/service-requests/$requestId', params: { requestId: 'SR-4102' } }); else void navigate({ to }); };
 
   function applyFilters() {
     const area = root.current;
@@ -75,14 +76,14 @@ export function DQScreen({ screen }: { screen: ScreenName }) {
         let terms = selected.replace(/\([^)]*\)/g, '').trim().split(/[ &-]+/).filter(x => x.length > 2 && !['plant','assembly','central','precision','industrial','requirement','stock','all','normal','adequate'].includes(x));
         if (/priority/i.test(select.options[0]?.text || '')) terms = [selected.match(/p[1-4]/)?.[0] || selected];
         if (/stock/i.test(select.options[0]?.text || '')) terms = [selected.includes('out') ? 'out of stock' : selected.includes('low') ? 'low stock' : selected.includes('reserved') ? 'reserved' : 'normal'];
-        show = show && (terms.length === 0 || terms.some(term => text.includes(term) || row.dataset.plant?.toLowerCase().includes(term) || row.dataset.skills?.toLowerCase().includes(term)));
+        show = show && (terms.length === 0 || terms.some(term => text.includes(term) || row.dataset['plant']?.toLowerCase().includes(term) || row.dataset['skills']?.toLowerCase().includes(term)));
       });
       const tab = f.tab;
       if (tab !== 'all') {
         const matches: Record<string, boolean> = {
           active: !/resolved|closed|completed|verified/.test(text), unassigned: /unassigned|not assigned/.test(text), critical: /p1|critical/.test(text), parts: /awaiting|stockout|in transit|out of stock|pending po|blocked/.test(text), sla: /imminent|breach|risk|00h|00:/.test(text), resolved: /resolved|closed|completed|verified/.test(text), normal: /normal/.test(text), degraded: /degraded/.test(text), conflict: /conflict/.test(text), stockout: /stockout/.test(text), breach: /sla|breach/.test(text), unavailable: /unavailable|shift/.test(text), bearings: /bearing|bushing/.test(text), hydraulics: /seal|hydraulic|oil|pressure/.test(text), electrical: /electrical|plc|drive|lidar|sensor/.test(text), motors: /motor|drive/.test(text), pneumatics: /pneumatic|valve/.test(text),
         };
-        show = show && (screen === 'technicians' ? row.dataset.status === tab : matches[tab] ?? text.includes(tab));
+        show = show && (screen === 'technicians' ? row.dataset['status'] === tab : matches[tab] ?? text.includes(tab));
       }
       row.classList.toggle('dq-filtered-out', !show);
       if (show) visible++;
@@ -137,7 +138,7 @@ export function DQScreen({ screen }: { screen: ScreenName }) {
       createdRequests.forEach(request => appendRequest(request));
       if (completed) area.querySelector('tbody tr')?.querySelectorAll('td').forEach(td => { if (cleanText(td).includes('In Progress')) td.textContent = 'Awaiting QA'; });
     }
-    assignedTechs.forEach(name => { area.querySelectorAll<HTMLElement>('.tech-card').forEach(card => { if (card.dataset.name?.startsWith(name)) card.dataset.status = 'dispatched'; }); });
+    assignedTechs.forEach(name => { area.querySelectorAll<HTMLElement>('.tech-card').forEach(card => { if (card.dataset['name']?.startsWith(name)) card.dataset['status'] = 'dispatched'; }); });
     const inputListener = (event: Event) => {
       const el = event.target;
       if (!(el instanceof HTMLInputElement)) return;
@@ -175,7 +176,8 @@ export function DQScreen({ screen }: { screen: ScreenName }) {
     const first = body?.querySelector('tr');
     if (!body || !first || body.querySelector(`[data-demo-id="${request.id}"]`)) return;
     const row = first.cloneNode(true) as HTMLElement;
-    row.dataset.demoId = request.id;
+    row.classList.remove('dq-filtered-out');
+    row.dataset['demoId'] = request.id;
     const cells = row.querySelectorAll('td');
     if (cells[0]) cells[0].textContent = request.id;
     if (cells[1]) cells[1].textContent = request.machine;
@@ -197,7 +199,7 @@ export function DQScreen({ screen }: { screen: ScreenName }) {
     const link = origin.closest<HTMLAnchorElement>('a');
     if (link) {
       event.preventDefault();
-      const path = link.dataset.path as keyof typeof destinations;
+      const path = link.dataset['path'] as keyof typeof destinations;
       if (path && destinations[path]) go(destinations[path]);
       else go(screen === 'details' ? '/service-requests' : '/service-requests/SR-4102');
       return;
@@ -242,21 +244,21 @@ export function DQScreen({ screen }: { screen: ScreenName }) {
     if (screen === 'technicians' && /Assign Task|Queue Task|Re-Route|Assign & Dispatch|Allocate Contingent|Assign As Assist|Confirm & Transmit/.test(text)) {
       if (/Confirm/.test(text)) {
         const name = root.current?.querySelector('#drawer-tech-name')?.textContent || 'Technician'; assignedTechs.add(name);
-        const card = [...(root.current?.querySelectorAll<HTMLElement>('.tech-card') || [])].find(x => x.dataset.name?.startsWith(name));
-        if (card) { card.dataset.status = 'dispatched'; const action = card.querySelector('button'); if (action) action.textContent = 'Re-Route'; }
+        const card = [...(root.current?.querySelectorAll<HTMLElement>('.tech-card') || [])].find(x => x.dataset['name']?.startsWith(name));
+        if (card) { card.dataset['status'] = 'dispatched'; const action = card.querySelector('button'); if (action) action.textContent = 'Re-Route'; }
         toggleDrawer(false); applyFilters(); notify(`${name} assigned and dispatched.`); return;
       }
       const card = button.closest<HTMLElement>('.tech-card');
-      const name = card?.dataset.name?.replace(/ DQ-.*/, '') || (/Contingent/.test(text) ? 'Sarah Chen' : /Assist/.test(text) ? 'Elena Costa' : 'Jan Hofer');
+      const name = card?.dataset['name']?.replace(/ DQ-.*/, '') || (/Contingent/.test(text) ? 'Sarah Chen' : /Assist/.test(text) ? 'Elena Costa' : 'Jan Hofer');
       const nameEl = root.current?.querySelector('#drawer-tech-name'); if (nameEl) nameEl.textContent = name;
-      const plant = root.current?.querySelector('#drawer-tech-plant'); if (plant) plant.textContent = card?.dataset.plant || 'Stuttgart Plant';
+      const plant = root.current?.querySelector('#drawer-tech-plant'); if (plant) plant.textContent = card?.dataset['plant'] || 'Stuttgart Plant';
       toggleDrawer(true); return;
     }
     if (screen === 'machines' && /Inspector|Telemetry|Inspect History|Inspect Event/.test(text)) { toggleDrawer(true); return; }
     const tabs: Record<string, string> = { 'All Requests':'all','Open Active':'active','Unassigned':'unassigned','P1 Critical':'critical','Awaiting Parts':'parts','SLA Risk':'sla','Resolved':'resolved','All Sites':'all','Critical Only':'critical','My Triage Queue':'unassigned','All Exceptions':'all','Resource Conflicts':'conflict','Part Stockouts':'stockout','SLA Breaches':'breach','Tech Unavailable':'unavailable','All SKUs':'all','Bearings & Bushings':'bearings','Hydraulics & Seals':'hydraulics','Electrical & PLCs':'electrical','Motors & Drives':'motors','Pneumatics':'pneumatics','Normal':'normal','Degraded':'degraded','Critical Down':'critical' };
     const match = Object.keys(tabs).find(k => text.startsWith(k));
-    if (button.dataset.filter) { selectTab(button,button.dataset.filter); return; }
-    if (match || /^All \d/.test(text)) { selectTab(button, match ? tabs[match] : 'all'); return; }
+    if (button.dataset['filter']) { selectTab(button,button.dataset['filter']); return; }
+    if (match || /^All \d/.test(text)) { selectTab(button, match ? (tabs[match] ?? 'all') : 'all'); return; }
     if (['Critical','High','Medium'].includes(text) && screen === 'exceptions') { selectTab(button, text === 'Critical' ? 'critical' : text.toLowerCase()); return; }
     if (/^(Critical P1|Elevated P2|Routine P3)/.test(text)) { button.parentElement?.querySelectorAll('button').forEach(b => b.classList.toggle('dq-active-tab',b === button)); return; }
     if (/Jump to Critical/.test(text)) { root.current?.querySelector('#critical-workbench')?.scrollIntoView({ behavior:'smooth' }); return; }
@@ -290,7 +292,7 @@ export function DQScreen({ screen }: { screen: ScreenName }) {
     else if (dialog.mode === 'scan') { filters.current.query = String(values.get('sku') || '').toLowerCase(); applyFilters(); notify('SKU located for cycle count.'); }
     else if (dialog.mode === 'onboard') {
       const grid = root.current?.querySelector('#tech-card-grid'); const first = grid?.querySelector<HTMLElement>('.tech-card');
-      if (grid && first) { const card = first.cloneNode(true) as HTMLElement; const name = String(values.get('name')); card.dataset.name = name; card.dataset.status = 'available'; const title = card.querySelector<HTMLElement>('h3,h4,.font-headline-md'); if (title) title.textContent = name; else card.insertAdjacentText('afterbegin',name); grid.prepend(card); }
+      if (grid && first) { const card = first.cloneNode(true) as HTMLElement; const name = String(values.get('name')); card.dataset['name'] = name; card.dataset['status'] = 'available'; const title = card.querySelector<HTMLElement>('h3,h4,.font-headline-md'); if (title) title.textContent = name; else card.insertAdjacentText('afterbegin',name); grid.prepend(card); }
       notify(`${values.get('name')} added to the technician roster.`);
     } else if (dialog.mode === 'receive') {
       const sku = String(values.get('sku')).toLowerCase(); const qty = Number(values.get('quantity'));
