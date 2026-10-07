@@ -17,7 +17,7 @@
   --surface: oklch(0.98306 0.00803 278.640);
   --secondary-fixed: oklch(0.91502 0.03783 272.524);
   --surface-container-high: oklch(0.93097 0.03302 261.033);
-  --outline: oklch(0.56738 0.01837 245.271);
+  --outline: oklch(0.43500 0.01837 245.271);
   --primary-fixed-dim: oklch(0.82364 0.09818 240.411);
   --on-tertiary-container: oklch(0.32309 0.07008 69.798);
   --on-secondary: oklch(1.00000 0.00000 89.876);
@@ -43,7 +43,7 @@
   --inverse-primary: oklch(0.82364 0.09818 240.411);
   --on-primary-container: oklch(0.31890 0.06928 236.663);
   --on-secondary-fixed: oklch(0.22472 0.03910 265.975);
-  --secondary: oklch(0.48343 0.03686 269.336);
+  --secondary: oklch(0.36500 0.03686 269.336);
   --on-surface: oklch(0.22346 0.04549 253.767);
   --surface-container: oklch(0.94739 0.02490 263.329);
   --on-secondary-container: oklch(0.50464 0.03645 269.384);
