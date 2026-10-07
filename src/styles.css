@@ -217,3 +217,15 @@ body { font-family: "Geist", sans-serif; font-size: 13px; letter-spacing: 0; }
 .dq-screen button.bg-primary { color: var(--on-primary); }
 .dq-screen button { font-weight: inherit; }
 .dq-screen main div:has(> table) { overflow-x: auto; }
+.dq-screen [class*="rounded-full"] { border-radius: 0.75rem; }
+.dq-screen button:focus-visible { outline: 2px solid var(--primary-container); outline-offset: 2px; }
+@media (max-width: 767px) {
+ .dq-screen header > div { display: grid; grid-template-columns: minmax(0,1fr) auto; }
+ .dq-screen header button { min-width: 28px; }
+ .dq-screen header > div > div:last-child > button:first-child { width: 30px; overflow: hidden; font-size: 0; flex-shrink: 0; }
+ .dq-screen header > div > div:last-child > button:first-child .material-symbols-outlined { font-size: 20px; }
+ .dq-screen main button { flex-shrink: 0; }
+ .dq-screen main .flex.items-center.gap-space-md:has(> button) { overflow-x: auto; }
+ .dq-screen main .flex.items-center.gap-space-xs:has(> button) { overflow-x: auto; }
+ .dq-screen main .flex.items-center.gap-space-sm:has(> button) { overflow-x: auto; }
+}
